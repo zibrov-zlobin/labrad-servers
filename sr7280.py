@@ -231,8 +231,6 @@ class SR7280Server(GPIBManagedServer):
         cp = yield dev.get_cp()
         returnValue(int(cp))
 
-    # Get/set FLOAT setting: whether or not the input is shielded by a 1 kilo-ohm resistor
-    # 1 (default): shielded by resistor, 0: ground
 
     @setting(107,'set_ground_float',n=['i'],returns=[])
     def set_float(self,c,n):
@@ -331,27 +329,23 @@ class SR7280Server(GPIBManagedServer):
         returnValue(ans)
 
 
-    @setting(501,float_mode='b',returns=['i','v[A]','v[V]'])
+    @setting(501,float_mode='b',returns=['i','v'])
     def x(self,c,float_mode=True):
         dev = self.selectedDevice(c)
         x_out = yield dev.read_x(float_mode)
         if not float_mode:
             returnValue(int(x_out))
         else:
-            mode = yield dev.get_imode()
-            if mode=='0':returnValue(units.V * float(x_out))
-            else:returnValue(units.A * float(x_out))
+            returnValue(float(x_out))
 
-    @setting(502,float_mode='b',returns=['i','v[A]','v[V]'])
+    @setting(502,float_mode='b',returns=['i','v')
     def y(self,c,float_mode=True):
         dev = self.selectedDevice(c)
         y_out = yield dev.read_y(float_mode)
         if not float_mode:
             returnValue(int(y_out))
         else:
-            mode = yield dev.get_imode()
-            if mode=='0':returnValue(units.V * float(y_out))
-            else:returnValue(units.A * float(y_out))
+            returnValue(float(y_out))
 
     @setting(503,float_mode='b',returns=['v','i'])
     def theta(self,c,float_mode=True):
@@ -360,16 +354,14 @@ class SR7280Server(GPIBManagedServer):
         val=float(phs) if float_mode else int(phs)
         returnValue(val)
 
-    @setting(504,float_mode='b',returns=['i','v[A]','v[V]'])
+    @setting(504,float_mode='b',returns=['i','v'])
     def r(self,c,float_mode=True):
         dev = self.selectedDevice(c)
         mag = yield dev.read_mag(float_mode)
         if not float_mode:
             returnValue(int(mag))
         else:
-            mode = yield dev.get_imode()
-            if mode=='0':returnValue(units.V * float(mag))
-            else:returnValue(units.A * float(mag))
+            returnValue(float(mag))
 
 
     @setting(800,n='i',returns='v')
@@ -380,7 +372,7 @@ class SR7280Server(GPIBManagedServer):
 
 
     @setting(1000,returns='i')
-    def get_overload(self,c):
+    def get_overload(self, c):
         dev=self.selectedDevice(c)
         overload = yield dev.get_overload()
         returnValue(overload)
